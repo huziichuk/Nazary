@@ -25,8 +25,7 @@ Built with ❤️ by [**Huziichuk**](https://github.com/huziichuk).
 - CSS Modules
 
 ### Backend (server/)
-- Express + TypeScript
+- NestJS + TypeScript
 - Prisma + PostgreSQL
-- Zod (input validation)
+- class-validator (input validation)
 - JWT (auth), bcrypt (password hashing)
-- Nodemailer (email confirmation)
