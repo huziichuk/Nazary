@@ -1,0 +1,265 @@
+.authPage {
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background: var(--color-bg);
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.authCard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.logoSection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.logo {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: contain;
+}
+
+.title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text);
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.tabSection {
+    margin-bottom: 1rem;
+}
+
+.tabs {
+    display: flex;
+    background: var(--color-surface-alt);
+    border-radius: var(--radius);
+    padding: 0.25rem;
+}
+
+.tab {
+    flex: 1;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+    border-radius: calc(var(--radius) - 2px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tabActive {
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.inputIcon {
+    position: absolute;
+    left: 0.75rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-text-secondary);
+    pointer-events: none;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 2.75rem;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text);
+    font-size: var(--font-size-md);
+    transition: border-color 0.2s ease;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.input::placeholder {
+    color: var(--color-text-disabled);
+}
+
+.togglePassword {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.togglePassword:hover {
+    color: var(--color-text);
+}
+
+.forgotPassword {
+    text-align: right;
+    margin-top: -0.5rem;
+}
+
+.forgotLink {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: color 0.2s ease;
+}
+
+.forgotLink:hover {
+    color: var(--color-primary-dark);
+}
+
+.submitButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--color-primary);
+    color: var(--color-primary-foreground);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-md);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.submitButton:hover {
+    background: var(--color-primary-dark);
+}
+
+.divider {
+    position: relative;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-border);
+}
+
+.dividerText {
+    background: var(--color-surface);
+    padding: 0 1rem;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+}
+
+.socialButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-text);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.socialButton:hover {
+    background: var(--color-hover);
+}
+
+.footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.footerText {
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.switchButton {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    margin-left: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.switchButton:hover {
+    color: var(--color-primary-dark);
+}
+
+.icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.error{
+    color: var(--color-error);
+    font-size: var(--font-size-md);
+    margin: 0.2rem 0;
+}
+
+.apiError{
+    color: var(--color-error);
+    font-size: var(--font-size-xl);
+    margin: 0.5rem 0;
+    text-align: center;
+}
