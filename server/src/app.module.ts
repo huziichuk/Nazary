@@ -6,6 +6,7 @@ import { DatabaseService } from './database/database.service';
 import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { SessionModule } from './session/session.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
 	imports: [
@@ -15,6 +16,7 @@ import { SessionModule } from './session/session.module';
 			isGlobal: true,
 		}),
 		SessionModule,
+		EmailModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, DatabaseService],

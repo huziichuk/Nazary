@@ -1,10 +1,12 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Get,
 	HttpCode,
 	HttpStatus,
 	Post,
+	Query,
 	Req,
 	Res,
 	UseGuards,
@@ -100,5 +102,18 @@ export class AuthController {
 		res.clearCookie('refreshToken');
 		await this.sessionService.delete(req.sessionId);
 		res.status(200).json({ message: AUTH_MESSAGES.SUCCESS.LOGOUT });
+	}
+
+	@Post('verify-email')
+	async verifyEmail(@Query('token') token: string) {
+		if (!token) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.INVALID_OR_EXPIRED_TOKEN,
+			);
+		}
+		await this.authService.verifyEmail(token.trim());
+		return {
+			message: AUTH_MESSAGES.SUCCESS.EMAIL_CONFIRMED,
+		};
 	}
 }

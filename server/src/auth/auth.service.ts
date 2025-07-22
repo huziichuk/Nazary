@@ -1,70 +1,168 @@
-import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
-import {UserService} from "../user/user.service";
-import {CreateUserDto} from "../user/dto/user.dto";
-import AUTH_MESSAGES from "../constants/auth.messages";
+import {
+	BadRequestException,
+	ForbiddenException,
+	Injectable,
+	UnauthorizedException,
+} from '@nestjs/common';
+import { UserService } from '../user/user.service';
+import { CreateUserDto } from '../user/dto/user.dto';
+import AUTH_MESSAGES from '../constants/auth.messages';
 import * as bcryptjs from 'bcryptjs';
-import {LoginDto} from "./dto/auth.dto";
-import {JwtService} from "@nestjs/jwt";
-import {ConfigService} from "@nestjs/config";
-import * as jwt from "jsonwebtoken";
-import CONFIG_CONSTANTS from "../constants/config.constants";
-import {nanoid} from "nanoid";
-import {SessionService} from "../session/session.service";
-import ms, {StringValue} from "ms";
+import { LoginDto } from './dto/auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import * as jwt from 'jsonwebtoken';
+import CONFIG_CONSTANTS from '../constants/config.constants';
+import { nanoid } from 'nanoid';
+import { SessionService } from '../session/session.service';
+import ms, { StringValue } from 'ms';
+import { EmailService } from '../email/email.service';
+import { EmailTemplateEnum } from '../types/general.types';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly userService: UserService,
-        private readonly jwtService: JwtService,
-        private readonly configService: ConfigService,
-        private readonly sessionService: SessionService,
-    ) {}
+	constructor(
+		private readonly userService: UserService,
+		private readonly jwtService: JwtService,
+		private readonly configService: ConfigService,
+		private readonly sessionService: SessionService,
+		private readonly emailService: EmailService,
+	) {}
 
-    async register(dto: CreateUserDto) {
-        const existingUser = await this.userService.findByEmail(dto.email);
-        if (existingUser) {
-            throw new BadRequestException(AUTH_MESSAGES.ERROR.USER_ALREADY_EXISTS)
-        }
-        const hashedPassword = bcryptjs.hashSync(dto.password, 10)
-        return await this.userService.create({...dto, password: hashedPassword});
-    }
+	async register(dto: CreateUserDto) {
+		const existingUser = await this.userService.findByEmail(dto.email);
+		if (existingUser) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.USER_ALREADY_EXISTS,
+			);
+		}
+		const hashedPassword = bcryptjs.hashSync(dto.password, 10);
+		const user = await this.userService.create({
+			...dto,
+			password: hashedPassword,
+		});
 
-    async login(dto: LoginDto) {
-        const user = await this.userService.findByEmail(dto.email);
-        if (!user) {
-            throw new UnauthorizedException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND)
-        }
+		await this.emailService.sendEmail({
+			to: user.email,
+			subject: 'Confirm your email',
+			template: EmailTemplateEnum.confirmEmail,
+			templateVariables: {
+				userName: dto.name.length === 0 ? dto.email : dto.name,
+				verificationUrl: `${this.configService.get<string>(
+					'CLIENT_URL',
+				)}/verify-email?token=${user.confirmToken}`,
+			},
+		});
 
-        if(!bcryptjs.compareSync(dto.password, user.password)){
-            throw new UnauthorizedException(AUTH_MESSAGES.ERROR.WRONG_PASSWORD)
-        }
+		return user;
+	}
 
-        const token= nanoid(64)
+	async login(dto: LoginDto) {
+		const user = await this.userService.findByEmail(dto.email);
+		if (!user) {
+			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
+		}
 
-        const session = await this.sessionService.create({
-            userId:user.id,
-            token,
-            expiresAt: new Date(Date.now() + ms(this.configService.get<StringValue>(CONFIG_CONSTANTS.JWT_REFRESH_EXPIRES_IN) || "30d")),
-        })
+		if (!bcryptjs.compareSync(dto.password, user.password)) {
+			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.WRONG_PASSWORD);
+		}
 
-        return this.generateTokens({userId:user.id, token, sessionId:session.id});
-    }
+		if (!user.isConfirmed) {
+			throw new ForbiddenException(
+				AUTH_MESSAGES.ERROR.EMAIL_NOT_CONFIRMED,
+			);
+		}
 
-    generateAccessToken(id: string) {
-        return this.jwtService.sign({id});
-    }
+		const token = nanoid(64);
 
-    generateRefreshToken({userId, sessionId, token}: {userId:string, sessionId: string, token:string}) {
-        return jwt.sign({userId, token, sessionId}, this.configService.get(CONFIG_CONSTANTS.JWT_REFRESH_SECRET)  || "JWT_REFRESH_SECRET" ,{
-            expiresIn: this.configService.get(CONFIG_CONSTANTS.JWT_REFRESH_EXPIRES_IN) ,
-        })
-    }
+		const session = await this.sessionService.create({
+			userId: user.id,
+			token,
+			expiresAt: new Date(
+				Date.now() +
+					ms(
+						this.configService.get<StringValue>(
+							CONFIG_CONSTANTS.JWT_REFRESH_EXPIRES_IN,
+						) || '30d',
+					),
+			),
+		});
 
-    generateTokens({userId, sessionId, token}: {userId:string, sessionId: string, token:string}) :{accessToken:string, refreshToken:string} {
-        return {
-            accessToken: this.generateAccessToken(userId),
-            refreshToken: this.generateRefreshToken({userId,sessionId, token}),
-        }
-    }
+		return this.generateTokens({
+			userId: user.id,
+			token,
+			sessionId: session.id,
+		});
+	}
+
+	async verifyEmail(token: string) {
+		const user = await this.userService.findByConfirmToken(token);
+		if (!user) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.INVALID_OR_EXPIRED_TOKEN,
+			);
+		}
+
+		if (user.isConfirmed) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.ALREADY_CONFIRMED,
+			);
+		}
+
+		user.isConfirmed = true;
+		user.confirmToken = null;
+
+		await this.userService.update(user);
+	}
+
+	generateAccessToken(id: string) {
+		return this.jwtService.sign({ id });
+	}
+
+	generateRefreshToken({
+		userId,
+		sessionId,
+		token,
+	}: {
+		userId: string;
+		sessionId: string;
+		token: string;
+	}) {
+		return jwt.sign(
+			{
+				userId,
+				token,
+				sessionId,
+			},
+			this.configService.get(CONFIG_CONSTANTS.JWT_REFRESH_SECRET) ||
+				'JWT_REFRESH_SECRET',
+			{
+				expiresIn: this.configService.get(
+					CONFIG_CONSTANTS.JWT_REFRESH_EXPIRES_IN,
+				),
+			},
+		);
+	}
+
+	generateTokens({
+		userId,
+		sessionId,
+		token,
+	}: {
+		userId: string;
+		sessionId: string;
+		token: string;
+	}): {
+		accessToken: string;
+		refreshToken: string;
+	} {
+		return {
+			accessToken: this.generateAccessToken(userId),
+			refreshToken: this.generateRefreshToken({
+				userId,
+				sessionId,
+				token,
+			}),
+		};
+	}
 }

@@ -7,6 +7,9 @@ import logo from "@/assets/nazary-white.png"
 const Home: React.FC = () => {
     return (
         <>
+            <article>
+                <title>Home — Nazary</title>
+            </article>
             <section className={styles.section}>
                 <div className={styles.container}>
                     <div className={`${styles.textCenter} ${styles.spaceY8}`}>
@@ -28,7 +31,7 @@ const Home: React.FC = () => {
                         <div className={styles.buttonGroup}>
                             <NavLink
                                 className={`${styles.button} ${styles.buttonPrimary}`}
-                                to={"/login"}
+                                to={"/auth/login"}
                             >
                                 <Globe className={`${styles.icon} ${styles.iconMr}`} />
                                 Open in browser
@@ -171,7 +174,7 @@ const Home: React.FC = () => {
 
                         <NavLink
                             className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonLarge}`}
-                            to={"/login"}
+                            to={"/auth/login"}
                         >
                             <Globe className={`${styles.icon} ${styles.iconMr}`} />
                             Launch Nazary

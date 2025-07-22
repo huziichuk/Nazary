@@ -12,7 +12,7 @@ model User {
   email        String    @unique
   password     String
   isConfirmed  Boolean   @default(false)
-  confirmToken String    @default(cuid())
+  confirmToken String?   @default(cuid())
   name         String?
   notes        Note[]
   createdAt    DateTime  @default(now())
