@@ -90,7 +90,7 @@ const ConfirmEmailPending: React.FC = () => {
 							</a>
 							<NavLink
 								className={`${styles.button} ${styles.buttonOutline}`}
-								to={pageConfig.resendVerify}
+								to={pageConfig.resendVerification}
 							>
 								<RefreshCw className={styles.icon} />
 								Resend confirmation
