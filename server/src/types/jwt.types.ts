@@ -1,9 +1,9 @@
 export type JwtAccessPayloadType = {
-    userId: string;
-}
+	userId: string;
+};
 
 export type JwtRefreshPayloadType = {
-    userId: string;
-    token: string;
-    sessionId: string;
-}
+	userId: string;
+	token: string;
+	sessionId: string;
+};

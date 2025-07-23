@@ -4,20 +4,19 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../user/dto/user.dto';
-import AUTH_MESSAGES from '../constants/auth.messages';
-import * as bcryptjs from 'bcryptjs';
-import { LoginDto } from './dto/auth.dto';
-import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import * as bcryptjs from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import CONFIG_CONSTANTS from '../constants/config.constants';
-import { nanoid } from 'nanoid';
-import { SessionService } from '../session/session.service';
 import ms, { StringValue } from 'ms';
+import { nanoid } from 'nanoid';
+import AUTH_MESSAGES from '../constants/auth.messages';
+import CONFIG_CONSTANTS from '../constants/config.constants';
 import { EmailService } from '../email/email.service';
+import { SessionService } from '../session/session.service';
 import { EmailTemplateEnum } from '../types/general.types';
+import { UserService } from '../user/user.service';
+import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,7 +28,7 @@ export class AuthService {
 		private readonly emailService: EmailService,
 	) {}
 
-	async register(dto: CreateUserDto) {
+	async register(dto: RegisterDto) {
 		const existingUser = await this.userService.findByEmail(dto.email);
 		if (existingUser) {
 			throw new BadRequestException(
@@ -93,6 +92,33 @@ export class AuthService {
 			token,
 			sessionId: session.id,
 		});
+	}
+
+	async resendVerification(email: string) {
+		const user = await this.userService.findByEmail(email);
+		if (!user) {
+			throw new BadRequestException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
+		}
+
+		if (user.isConfirmed) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.ALREADY_CONFIRMED,
+			);
+		}
+
+		await this.emailService.sendEmail({
+			to: user.email,
+			subject: 'Confirm your email',
+			template: EmailTemplateEnum.confirmEmail,
+			templateVariables: {
+				userName: user.name ? user.name : user.email,
+				verificationUrl: `${this.configService.get<string>(
+					'CLIENT_URL',
+				)}/verify-email?token=${user.confirmToken}`,
+			},
+		});
+
+		return { message: AUTH_MESSAGES.SUCCESS.VERIFICATION_EMAIL_SENT };
 	}
 
 	async verifyEmail(token: string) {

@@ -10,6 +10,8 @@ const AUTH_MESSAGES = {
 		AUTHORIZED: 'User is logged in',
 		LOGOUT: 'Logout was successfully',
 		EMAIL_CONFIRMED: 'Email is confirmed',
+		VERIFICATION_EMAIL_SENT: 'Verification email sent',
+		ALREADY_CONFIRMED: 'Email is already confirmed',
 	},
 	ERROR: {
 		USER_ALREADY_EXISTS: 'User already exists',
@@ -22,6 +24,7 @@ const AUTH_MESSAGES = {
 		INVALID_OR_EXPIRED_TOKEN: 'Invalid or expired token',
 		ALREADY_CONFIRMED: 'Email is already confirmed',
 		EMAIL_NOT_CONFIRMED: 'Email is not confirmed',
+		EMAIL_IS_REQUIRED: 'Email is required',
 	},
 };
 

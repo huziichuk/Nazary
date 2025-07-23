@@ -13,8 +13,7 @@ import {
 	ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../user/dto/user.dto';
-import { LoginDto } from './dto/auth.dto';
+import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { Response } from 'express';
 import AUTH_MESSAGES from '../constants/auth.messages';
 import ms, { StringValue } from 'ms';
@@ -45,7 +44,7 @@ export class AuthController {
 	@ApiBadRequestResponse({ description: GENERAL_MESSAGES.ERROR.VALIDATION })
 	@HttpCode(HttpStatus.CREATED)
 	@Post('register')
-	async register(@Body(new ValidationPipe()) dto: CreateUserDto) {
+	async register(@Body(new ValidationPipe()) dto: RegisterDto) {
 		await this.authService.register(dto);
 		return { message: AUTH_MESSAGES.SUCCESS.REGISTERED };
 	}
@@ -114,6 +113,19 @@ export class AuthController {
 		await this.authService.verifyEmail(token.trim());
 		return {
 			message: AUTH_MESSAGES.SUCCESS.EMAIL_CONFIRMED,
+		};
+	}
+
+	@Post('resend-verification')
+	async resendVerification(@Body('email') email: string) {
+		if (!email) {
+			throw new BadRequestException(
+				AUTH_MESSAGES.ERROR.EMAIL_IS_REQUIRED,
+			);
+		}
+		await this.authService.resendVerification(email.trim());
+		return {
+			message: AUTH_MESSAGES.SUCCESS.VERIFICATION_EMAIL_SENT,
 		};
 	}
 }
