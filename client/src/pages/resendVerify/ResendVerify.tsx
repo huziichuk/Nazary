@@ -7,7 +7,7 @@ import { Info, Mail, Send } from 'lucide-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import styles from './ResendVerify.module.css'
-import ResentVerify from './resentVerify/resentVerify'
+import ResentVerify from './resentVerify/ResentVerify'
 
 const ResendVerify: React.FC = () => {
 	const [error, setError] = React.useState<string | null>(null)

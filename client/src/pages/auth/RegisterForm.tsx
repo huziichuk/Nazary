@@ -7,6 +7,7 @@ import ValidationError from "@/components/ValidationError.tsx";
 import {apiRegister} from "@/api/auth.ts";
 import {useNavigate} from "react-router-dom";
 import {AxiosError} from "axios";
+import { pageConfig } from '@/pageConfig'
 
 const RegisterForm: React.FC = () => {
 
@@ -27,7 +28,7 @@ const RegisterForm: React.FC = () => {
         setError(null);
         try {
             await apiRegister(data);
-            navigate("login")
+            navigate(pageConfig.login)
 
         } catch (e) {
             if (e instanceof AxiosError) {

@@ -8,6 +8,7 @@ import {
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import styles from './ConfirmEmailPending.module.css'
+import { pageConfig } from '@/pageConfig'
 
 const ConfirmEmailPending: React.FC = () => {
 	return (
@@ -89,7 +90,7 @@ const ConfirmEmailPending: React.FC = () => {
 							</a>
 							<NavLink
 								className={`${styles.button} ${styles.buttonOutline}`}
-								to={'/resend-verification'}
+								to={pageConfig.resendVerify}
 							>
 								<RefreshCw className={styles.icon} />
 								Resend confirmation

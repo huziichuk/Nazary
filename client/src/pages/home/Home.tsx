@@ -3,6 +3,7 @@ import styles from "@/pages/home/Home.module.css"
 import {NavLink} from "react-router-dom";
 import {Code, FileText, Github, Globe, Search, Shield, Tag, User} from "lucide-react";
 import logo from "@/assets/nazary-white.png"
+import { pageConfig } from '@/pageConfig'
 
 const Home: React.FC = () => {
     return (
@@ -36,7 +37,7 @@ const Home: React.FC = () => {
                                 <Globe className={`${styles.icon} ${styles.iconMr}`} />
                                 Open in browser
                             </NavLink>
-                            <a href="https://github.com/huziichuk/Nazary">
+                            <a href={pageConfig.githubRepoLink}>
                                 <button className={`${styles.button} ${styles.buttonOutline}`}>
                                     <Github className={`${styles.icon} ${styles.iconMr}`} />
                                     Source Code
@@ -147,7 +148,7 @@ const Home: React.FC = () => {
                         </div>
 
                         <div className={styles.buttonGroup}>
-                            <a href="https://github.com/huziichuk/Nazary">
+                            <a href={pageConfig.githubRepoLink}>
                                 <button className={`${styles.button} ${styles.buttonOutline}`}>
                                     <Github className={`${styles.icon} ${styles.iconMr}`} />
                                     View on GitHub
@@ -174,7 +175,7 @@ const Home: React.FC = () => {
 
                         <NavLink
                             className={`${styles.button} ${styles.buttonPrimary} ${styles.buttonLarge}`}
-                            to={"/auth/login"}
+                            to={pageConfig.login}
                         >
                             <Globe className={`${styles.icon} ${styles.iconMr}`} />
                             Launch Nazary

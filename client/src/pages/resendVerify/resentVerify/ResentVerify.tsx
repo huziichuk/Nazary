@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import styles from './ResentVerify.module.css'
+import { pageConfig } from '@/pageConfig'
 
 type Props = {
 	userEmail: string
@@ -118,7 +119,7 @@ const ResentVerify: React.FC<Props> = ({ userEmail }) => {
 					<div className={styles.footer}>
 						<button
 							className={styles.backButton}
-							onClick={() => navigate('/')}
+							onClick={() => navigate(pageConfig.home)}
 						>
 							← Back to Home
 						</button>
