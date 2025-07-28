@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Resend } from 'resend';
 import { ConfigService } from '@nestjs/config';
-import { EmailTemplateEnum } from '../types/general.types';
-import { VerifyEmail } from '../emails/VerifyEmail';
 import { render } from '@react-email/components';
+import { Resend } from 'resend';
+import { PasswordChanged } from 'src/emails/PasswordChanged';
+import { ResetPassword } from '../emails/ResetPassword';
+import { VerifyEmail } from '../emails/VerifyEmail';
+import { EmailTemplateEnum } from '../types/general.types';
 
 @Injectable()
 export class EmailService {
@@ -25,6 +27,7 @@ export class EmailService {
 		templateVariables?: {
 			userName?: string;
 			verificationUrl?: string;
+			resetCode?: string;
 		};
 	}) {
 		try {
@@ -44,6 +47,25 @@ export class EmailService {
 							verificationUrl: templateVariables.verificationUrl,
 						}),
 					);
+				},
+				[EmailTemplateEnum.resetPassword]: () => {
+					if (
+						!templateVariables.resetCode ||
+						!templateVariables.userName
+					) {
+						throw new Error(
+							'Missing template variables for confirmEmail',
+						);
+					}
+					return render(
+						ResetPassword({
+							userName: templateVariables.userName,
+							resetCode: templateVariables.resetCode,
+						}),
+					);
+				},
+				[EmailTemplateEnum.passwordChanged]: () => {
+					return render(PasswordChanged());
 				},
 			};
 

@@ -1,22 +1,30 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { UserModule } from '../user/user.module';
-import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { DatabaseModule } from 'src/database/database.module';
+import { EncryptionModule } from 'src/encryption/encryption.module';
+import { VerificationCodeModule } from 'src/verification-code/verification-code.module';
+import { VerificationCodeService } from 'src/verification-code/verification-code.service';
 import CONFIG_CONSTANTS from '../constants/config.constants';
-import { SessionModule } from '../session/session.module';
-import { AuthGuard } from './auth.guard';
 import { EmailModule } from '../email/email.module';
+import { SessionModule } from '../session/session.module';
+import { UserModule } from '../user/user.module';
+import { AuthController } from './auth.controller';
+import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @Module({
 	controllers: [AuthController],
-	providers: [AuthService, AuthGuard],
+	providers: [AuthService, AuthGuard, VerificationCodeService],
 	exports: [AuthGuard],
 	imports: [
+		EncryptionModule,
+		VerificationCodeModule,
 		UserModule,
+		DatabaseModule,
 		ConfigModule,
 		SessionModule,
+		EncryptionModule,
 		EmailModule,
 		JwtModule.registerAsync({
 			imports: [ConfigModule],

@@ -10,6 +10,21 @@ export interface IRegisterDto {
 	confirmPassword: string
 }
 
-export interface IResetPasswordDto {
+export interface IRequestResetPasswordDto {
 	email: string
+}
+
+export type ResetPasswordStage =
+	| 'request'
+	| 'verify'
+	| 'newPassword'
+	| 'success'
+
+export interface INewPasswordDto {
+	newPassword: string
+	confirmNewPassword: string
+}
+
+export interface ISetNewPassword extends INewPasswordDto {
+	code: string
 }

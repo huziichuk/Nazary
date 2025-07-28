@@ -8,16 +8,17 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  password     String
-  isConfirmed  Boolean   @default(false)
-  confirmToken String?   @default(cuid())
-  name         String?
-  notes        Note[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  sessions     Session[]
+  id                String             @id @default(cuid())
+  email             String             @unique
+  password          String
+  isConfirmed       Boolean            @default(false)
+  confirmToken      String?
+  name              String?
+  notes             Note[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  sessions          Session[]
+  VerificationCodes VerificationCode[]
 }
 
 model Note {
@@ -44,4 +45,18 @@ model Session {
   token     String
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      CodeType
+  code      String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+enum CodeType {
+  PASSWORD_RESET
 }

@@ -7,6 +7,7 @@ import NotFound from '@/pages/notFound/NotFound.tsx'
 import ResendVerify from '@/pages/resendVerify/ResendVerify'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
+import ResetPassword from './pages/resetPassword/ResetPassword'
 function App() {
 	return (
 		<>
@@ -28,6 +29,10 @@ function App() {
 						<Route
 							path={pageConfig.resendVerification}
 							element={<ResendVerify />}
+						/>
+						<Route
+							path={pageConfig.resetPassword}
+							element={<ResetPassword />}
 						/>
 					</Route>
 					<Route element={<MainLayout />}>

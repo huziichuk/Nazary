@@ -1,6 +1,5 @@
 import { apiResendVerification } from '@/api/auth'
 import ValidationError from '@/components/ValidationError'
-import type { IResetPasswordDto } from '@/types/authTypes'
 import { useMutation } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
 import { Info, Mail, Send } from 'lucide-react'
@@ -8,12 +7,13 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import styles from './ResendVerify.module.css'
 import ResentVerify from './resentVerify/ResentVerify'
+import type { IRequestResetPasswordDto } from '@/types/authTypes'
 
 const ResendVerify: React.FC = () => {
 	const [error, setError] = React.useState<string | null>(null)
 
 	const { register, handleSubmit, getValues, formState } =
-		useForm<IResetPasswordDto>({
+		useForm<IRequestResetPasswordDto>({
 			mode: 'onChange',
 		})
 
@@ -23,9 +23,6 @@ const ResendVerify: React.FC = () => {
 		isSuccess,
 	} = useMutation({
 		mutationFn: (email: string) => apiResendVerification(email),
-		onSuccess: () => {
-			alert('Verification email sent successfully!')
-		},
 		onError: (error: unknown) => {
 			if (error instanceof AxiosError) {
 				setError(
@@ -38,7 +35,7 @@ const ResendVerify: React.FC = () => {
 		},
 	})
 
-	const onSubmit = (data: IResetPasswordDto) => {
+	const onSubmit = (data: IRequestResetPasswordDto) => {
 		ResendVerify(data.email)
 	}
 

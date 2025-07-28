@@ -12,6 +12,9 @@ const AUTH_MESSAGES = {
 		EMAIL_CONFIRMED: 'Email is confirmed',
 		VERIFICATION_EMAIL_SENT: 'Verification email sent',
 		ALREADY_CONFIRMED: 'Email is already confirmed',
+		REQUEST_PASSWORD_RESET: 'Requested successfully',
+		TOKEN_IS_OK: 'Token is valid',
+		PASSWORD_CHANGED: 'Password was changed successfully!',
 	},
 	ERROR: {
 		USER_ALREADY_EXISTS: 'User already exists',
@@ -25,6 +28,9 @@ const AUTH_MESSAGES = {
 		ALREADY_CONFIRMED: 'Email is already confirmed',
 		EMAIL_NOT_CONFIRMED: 'Email is not confirmed',
 		EMAIL_IS_REQUIRED: 'Email is required',
+		INVALID_CODE: 'Invalid code',
+		WRONG_CODE: 'Wrong or expired code',
+		CODE_EXIST: 'Code is already exist',
 	},
 };
 

@@ -2,11 +2,12 @@ import {
 	BadRequestException,
 	ForbiddenException,
 	Injectable,
+	NotFoundException,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcryptjs from 'bcryptjs';
+import { CodeType } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
 import ms, { StringValue } from 'ms';
 import { nanoid } from 'nanoid';
@@ -16,7 +17,15 @@ import { EmailService } from '../email/email.service';
 import { SessionService } from '../session/session.service';
 import { EmailTemplateEnum } from '../types/general.types';
 import { UserService } from '../user/user.service';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { EncryptionService } from './../encryption/encryption.service';
+import { VerificationCodeService } from './../verification-code/verification-code.service';
+import {
+	LoginDto,
+	RegisterDto,
+	RequestPasswordResetDto,
+	ResetPasswordDto,
+	VerifyPasswordResetDto,
+} from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +35,8 @@ export class AuthService {
 		private readonly configService: ConfigService,
 		private readonly sessionService: SessionService,
 		private readonly emailService: EmailService,
+		private readonly encryptionService: EncryptionService,
+		private readonly verificationCodeService: VerificationCodeService,
 	) {}
 
 	async register(dto: RegisterDto) {
@@ -35,10 +46,12 @@ export class AuthService {
 				AUTH_MESSAGES.ERROR.USER_ALREADY_EXISTS,
 			);
 		}
-		const hashedPassword = bcryptjs.hashSync(dto.password, 10);
+
+		const confirmToken = nanoid(64);
 		const user = await this.userService.create({
 			...dto,
-			password: hashedPassword,
+			password: await this.encryptionService.hashPassword(dto.password),
+			confirmToken: this.encryptionService.sha256(confirmToken),
 		});
 
 		await this.emailService.sendEmail({
@@ -49,7 +62,7 @@ export class AuthService {
 				userName: dto.name.length === 0 ? dto.email : dto.name,
 				verificationUrl: `${this.configService.get<string>(
 					'CLIENT_URL',
-				)}/verify-email?token=${user.confirmToken}`,
+				)}/verify-email?token=${confirmToken}`,
 			},
 		});
 
@@ -62,7 +75,12 @@ export class AuthService {
 			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
 		}
 
-		if (!bcryptjs.compareSync(dto.password, user.password)) {
+		if (
+			(await this.encryptionService.comparePassword(
+				dto.password,
+				user.password,
+			)) === false
+		) {
 			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.WRONG_PASSWORD);
 		}
 
@@ -94,6 +112,33 @@ export class AuthService {
 		});
 	}
 
+	async resetPassword(dto: ResetPasswordDto) {
+		const codeObject = await this.verifyPasswordReset({ code: dto.code });
+
+		const user = await this.userService.findById(codeObject.userId);
+
+		if (!user)
+			throw new BadRequestException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
+
+		user.password = await this.encryptionService.hashPassword(
+			dto.newPassword,
+		);
+
+		await this.userService.update(user);
+
+		await this.verificationCodeService.deleteVerificationCode(
+			codeObject.id,
+		);
+
+		await this.sessionService.deleteAll(user.id);
+
+		await this.emailService.sendEmail({
+			to: user.email,
+			subject: 'Password changed',
+			template: EmailTemplateEnum.passwordChanged,
+		});
+	}
+
 	async resendVerification(email: string) {
 		const user = await this.userService.findByEmail(email);
 		if (!user) {
@@ -117,12 +162,12 @@ export class AuthService {
 				)}/verify-email?token=${user.confirmToken}`,
 			},
 		});
-
-		return { message: AUTH_MESSAGES.SUCCESS.VERIFICATION_EMAIL_SENT };
 	}
 
 	async verifyEmail(token: string) {
-		const user = await this.userService.findByConfirmToken(token);
+		const encryptedToken = this.encryptionService.sha256(token);
+		console.log(encryptedToken);
+		const user = await this.userService.findByConfirmToken(encryptedToken);
 		if (!user) {
 			throw new BadRequestException(
 				AUTH_MESSAGES.ERROR.INVALID_OR_EXPIRED_TOKEN,
@@ -139,6 +184,53 @@ export class AuthService {
 		user.confirmToken = null;
 
 		await this.userService.update(user);
+	}
+
+	async requestPasswordReset(dto: RequestPasswordResetDto) {
+		const user = await this.userService.findByEmail(dto.email);
+		if (!user)
+			throw new NotFoundException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
+		if (!user.isConfirmed)
+			throw new ForbiddenException(
+				AUTH_MESSAGES.ERROR.EMAIL_NOT_CONFIRMED,
+			);
+
+		const code = this.encryptionService.generate6DigitCode();
+
+		await this.emailService.sendEmail({
+			to: user.email,
+			subject: 'Reset Password',
+			template: EmailTemplateEnum.resetPassword,
+			templateVariables: {
+				userName: user.name ? user.name : user.email,
+				resetCode: code,
+			},
+		});
+
+		await this.verificationCodeService.createVerificationCode({
+			userId: user.id,
+			type: CodeType.PASSWORD_RESET,
+			code: code,
+		});
+	}
+
+	async verifyPasswordReset(dto: VerifyPasswordResetDto) {
+		const codeDataObject =
+			await this.verificationCodeService.getVerificationCode(dto.code);
+		if (!codeDataObject)
+			throw new BadRequestException(AUTH_MESSAGES.ERROR.INVALID_CODE);
+
+		if (codeDataObject.type !== CodeType.PASSWORD_RESET)
+			throw new BadRequestException(AUTH_MESSAGES.ERROR.INVALID_CODE);
+
+		if (codeDataObject.expiresAt < new Date()) {
+			await this.verificationCodeService.deleteVerificationCode(
+				codeDataObject.id,
+			);
+			throw new BadRequestException(AUTH_MESSAGES.ERROR.INVALID_CODE);
+		}
+
+		return codeDataObject;
 	}
 
 	generateAccessToken(id: string) {

@@ -12,22 +12,28 @@ import {
 	UseGuards,
 	ValidationPipe,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
-import { Response } from 'express';
-import AUTH_MESSAGES from '../constants/auth.messages';
-import ms, { StringValue } from 'ms';
 import { ConfigService } from '@nestjs/config';
-import CONFIG_CONSTANTS from '../constants/config.constants';
-import { AuthGuard } from './auth.guard';
-import { SessionService } from '../session/session.service';
-import { AuthRequest } from '../types/request.types';
 import {
 	ApiBadRequestResponse,
 	ApiOkResponse,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Response } from 'express';
+import ms, { StringValue } from 'ms';
+import AUTH_MESSAGES from '../constants/auth.messages';
+import CONFIG_CONSTANTS from '../constants/config.constants';
 import GENERAL_MESSAGES from '../constants/general.messages';
+import { SessionService } from '../session/session.service';
+import { AuthRequest } from '../types/request.types';
+import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
+import {
+	LoginDto,
+	RegisterDto,
+	RequestPasswordResetDto,
+	ResetPasswordDto,
+	VerifyPasswordResetDto,
+} from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -126,6 +132,34 @@ export class AuthController {
 		await this.authService.resendVerification(email.trim());
 		return {
 			message: AUTH_MESSAGES.SUCCESS.VERIFICATION_EMAIL_SENT,
+		};
+	}
+
+	@Post('request-password-reset')
+	async requestPasswordReset(
+		@Body(new ValidationPipe()) dto: RequestPasswordResetDto,
+	) {
+		await this.authService.requestPasswordReset(dto);
+		return {
+			message: AUTH_MESSAGES.SUCCESS.REQUEST_PASSWORD_RESET,
+		};
+	}
+
+	@Post('verify-password-reset')
+	async verifyPasswordReset(
+		@Body(new ValidationPipe()) dto: VerifyPasswordResetDto,
+	) {
+		await this.authService.verifyPasswordReset(dto);
+		return {
+			message: AUTH_MESSAGES.SUCCESS.TOKEN_IS_OK,
+		};
+	}
+
+	@Post('password-reset')
+	async passwordReset(@Body(new ValidationPipe()) dto: ResetPasswordDto) {
+		await this.authService.resetPassword(dto);
+		return {
+			message: AUTH_MESSAGES.SUCCESS.PASSWORD_CHANGED,
 		};
 	}
 }

@@ -7,6 +7,9 @@ import { UserModule } from './user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { SessionModule } from './session/session.module';
 import { EmailModule } from './email/email.module';
+import { NoteModule } from './note/note.module';
+import { VerificationCodeModule } from './verification-code/verification-code.module';
+import { EncryptionModule } from './encryption/encryption.module';
 
 @Module({
 	imports: [
@@ -17,6 +20,9 @@ import { EmailModule } from './email/email.module';
 		}),
 		SessionModule,
 		EmailModule,
+		NoteModule,
+		VerificationCodeModule,
+		EncryptionModule,
 	],
 	controllers: [AppController],
 	providers: [AppService, DatabaseService],
