@@ -4,13 +4,19 @@ import type {
 	IRegisterDto,
 	ISetNewPassword,
 } from '@/types/authTypes.ts'
-import type { IApiGeneral } from '@/types/generalTypes.ts'
+import type {
+	IApiGeneral,
+	IApiIsAuth,
+	IApiLogin,
+} from '@/types/generalTypes.ts'
 
 export const apiRegister = async (data: IRegisterDto) =>
 	api.post<IApiGeneral>('/auth/register', data)
 
 export const apiLogin = async (data: ILoginDto) =>
-	api.post<IApiGeneral>('/auth/login', data)
+	api.post<IApiLogin>('/auth/login', data)
+
+export const apiIsAuth = async () => api.get<IApiIsAuth>('/auth/is-auth')
 
 export const apiLogout = async () => api.post<IApiGeneral>('/auth/logout')
 

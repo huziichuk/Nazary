@@ -8,5 +8,6 @@ import { VerificationCodeService } from './verification-code.service';
 @Module({
 	providers: [VerificationCodeService, DatabaseService, EncryptionService],
 	imports: [DatabaseModule, EncryptionModule],
+	exports: [VerificationCodeService],
 })
 export class VerificationCodeModule {}

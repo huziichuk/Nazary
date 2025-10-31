@@ -1,0 +1,193 @@
+.sidebar {
+	width: 16rem;
+	height: calc(100vh - 4rem);
+	background: var(--color-surface);
+	border-right: 1px solid var(--color-border);
+	display: flex;
+	flex-direction: column;
+	position: sticky;
+	top: 4rem;
+}
+
+@media (max-width: 768px) {
+	.sidebar {
+		display: none;
+	}
+}
+
+.header {
+	padding: 1.5rem;
+	border-bottom: 1px solid var(--color-border);
+}
+
+.logoSection {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.logo {
+	width: 2rem;
+	height: 2rem;
+	object-fit: contain;
+}
+
+.logoText {
+	font-size: var(--font-size-xl);
+	font-weight: 600;
+	color: var(--color-text);
+}
+
+.navigation {
+	flex: 1;
+	padding: 1.5rem 0;
+	overflow-y: auto;
+}
+
+.section {
+	margin-bottom: 2rem;
+}
+
+.section:last-child {
+	margin-bottom: 0;
+}
+
+.sectionTitle {
+	font-size: var(--font-size-sm);
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	padding: 0 1.5rem;
+	margin-bottom: 0.75rem;
+}
+
+.menuList {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.menuItem {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.75rem 1.5rem;
+	background: none;
+	border: none;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-size: var(--font-size-md);
+	text-align: left;
+	position: relative;
+}
+
+.menuItem:hover {
+	background: var(--color-hover);
+	color: var(--color-text);
+}
+
+.menuItem.active {
+	background: rgba(124, 58, 237, 0.1);
+	color: var(--color-primary);
+	border-right: 2px solid var(--color-primary);
+}
+
+.menuItem.active::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	background: var(--color-primary);
+}
+
+.logoutItem:hover {
+	background: rgba(239, 68, 68, 0.1);
+	color: var(--color-error);
+}
+
+.menuIcon {
+	width: 1.25rem;
+	height: 1.25rem;
+	flex-shrink: 0;
+}
+
+.menuLabel {
+	flex: 1;
+}
+
+.menuCount {
+	background: var(--color-primary);
+	color: white;
+	font-size: var(--font-size-xs);
+	font-weight: 500;
+	padding: 0.25rem 0.5rem;
+	border-radius: 10px;
+	min-width: 1.5rem;
+	text-align: center;
+}
+
+.footer {
+	padding: 1.5rem;
+	border-top: 1px solid var(--color-border);
+}
+
+.userInfo {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.avatar {
+	width: 2.5rem;
+	height: 2.5rem;
+	background: var(--color-primary);
+	border-radius: 50%;
+	position: relative;
+	color: white;
+	font-weight: 600;
+	flex-shrink: 0;
+}
+
+.avatar span {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	height: 20px;
+}
+
+.userDetails {
+	flex: 1;
+	min-width: 0;
+}
+
+.userName {
+	font-size: var(--font-size-sm);
+	font-weight: 500;
+	color: var(--color-text);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.userEmail {
+	font-size: var(--font-size-xs);
+	color: var(--color-text-secondary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Стили для мобильных устройств - показываем сайдбар как bottom navigation */
+@media (max-width: 768px) {
+	.sidebar {
+		display: none;
+	}
+
+	/* Можно добавить мобильную навигацию снизу */
+}

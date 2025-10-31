@@ -1,13 +1,16 @@
-import { useState } from 'react'
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
-import styles from './Auth.module.css'
-import { NavLink } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import type { ILoginDto } from '@/types/authTypes.ts'
 import ValidationError from '@/components/ValidationError.tsx'
-import { AxiosError } from 'axios'
+import { useAuth } from '@/hooks/useAuth'
 import { useLogin } from '@/hooks/useLogin.ts'
+import { useMasterKey } from '@/hooks/useMasterKey'
 import { pageConfig } from '@/pageConfig'
+import type { ILoginDto } from '@/types/authTypes.ts'
+import { AxiosError } from 'axios'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { NavLink, useNavigate } from 'react-router-dom'
+import Loading from '../loading/Loading'
+import styles from './Auth.module.css'
 
 const LoginForm = () => {
 	const [showPassword, setShowPassword] = useState(false)
@@ -19,10 +22,22 @@ const LoginForm = () => {
 		mode: 'onChange',
 	})
 
+	const navigate = useNavigate()
+
+	const { isAuthenticated, isLoading } = useAuth()
+	const { masterKey } = useMasterKey()
+
+	useEffect(() => {
+		if (isAuthenticated && !!masterKey) navigate(pageConfig.dashboard)
+	}, [isAuthenticated, masterKey, navigate])
+
+	if (isLoading) return <Loading />
+
 	const onSubmit = (data: ILoginDto) => {
 		setError(null)
 		login(data, {
 			onError: (e: unknown) => {
+				console.log(e)
 				if (e instanceof AxiosError) {
 					const message = Array.isArray(e.response?.data.message)
 						? e.response?.data.message[0]
@@ -57,8 +72,7 @@ const LoginForm = () => {
 									value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
 									message: 'Invalid email address',
 								},
-								setValueAs: (v: string): string =>
-									v.trim() || '',
+								setValueAs: (v: string): string => v.trim() || '',
 							})}
 						/>
 					</div>
@@ -80,8 +94,7 @@ const LoginForm = () => {
 							placeholder='Enter password'
 							{...register('password', {
 								required: 'Password is required',
-								setValueAs: (v: string): string =>
-									v.trim() || '',
+								setValueAs: (v: string): string => v.trim() || '',
 							})}
 						/>
 						<button
@@ -103,10 +116,7 @@ const LoginForm = () => {
 				</div>
 
 				<div className={styles.forgotPassword}>
-					<NavLink
-						to={pageConfig.resetPassword}
-						className={styles.forgotLink}
-					>
+					<NavLink to={pageConfig.resetPassword} className={styles.forgotLink}>
 						Forgot password?
 					</NavLink>
 				</div>

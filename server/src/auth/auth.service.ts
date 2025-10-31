@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { CodeType } from '@prisma/client';
+import { CodeType, User } from '@prisma/client';
 import * as jwt from 'jsonwebtoken';
 import ms, { StringValue } from 'ms';
 import { nanoid } from 'nanoid';
@@ -70,6 +70,7 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto) {
+		console.log(this.configService.get('JWT_ACCESS_SECRET'));
 		const user = await this.userService.findByEmail(dto.email);
 		if (!user) {
 			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);
@@ -105,11 +106,14 @@ export class AuthService {
 			),
 		});
 
-		return this.generateTokens({
-			userId: user.id,
-			token,
-			sessionId: session.id,
-		});
+		return {
+			...this.generateTokens({
+				user,
+				token,
+				sessionId: session.id,
+			}),
+			salt: user.salt,
+		};
 	}
 
 	async resetPassword(dto: ResetPasswordDto) {
@@ -166,7 +170,6 @@ export class AuthService {
 
 	async verifyEmail(token: string) {
 		const encryptedToken = this.encryptionService.sha256(token);
-		console.log(encryptedToken);
 		const user = await this.userService.findByConfirmToken(encryptedToken);
 		if (!user) {
 			throw new BadRequestException(
@@ -233,22 +236,39 @@ export class AuthService {
 		return codeDataObject;
 	}
 
-	generateAccessToken(id: string) {
-		return this.jwtService.sign({ id });
+	generateAccessToken(user: User, sessionId: string) {
+		return jwt.sign(
+			{
+				id: user.id,
+				email: user.email,
+				name: user.name,
+				createdAt: user.createdAt,
+				salt: user.salt,
+				sessionId: sessionId,
+			},
+			this.configService.get<string>(
+				CONFIG_CONSTANTS.JWT_ACCESS_SECRET,
+			) || 'JWT_ACCESS_SECRET',
+			{
+				expiresIn: this.configService.get(
+					CONFIG_CONSTANTS.JWT_ACCESS_EXPIRES_IN,
+				),
+			},
+		);
 	}
 
 	generateRefreshToken({
-		userId,
+		user,
 		sessionId,
 		token,
 	}: {
-		userId: string;
+		user: User;
 		sessionId: string;
 		token: string;
 	}) {
 		return jwt.sign(
 			{
-				userId,
+				id: user.id,
 				token,
 				sessionId,
 			},
@@ -263,11 +283,11 @@ export class AuthService {
 	}
 
 	generateTokens({
-		userId,
+		user,
 		sessionId,
 		token,
 	}: {
-		userId: string;
+		user: User;
 		sessionId: string;
 		token: string;
 	}): {
@@ -275,9 +295,9 @@ export class AuthService {
 		refreshToken: string;
 	} {
 		return {
-			accessToken: this.generateAccessToken(userId),
+			accessToken: this.generateAccessToken(user, sessionId),
 			refreshToken: this.generateRefreshToken({
-				userId,
+				user,
 				sessionId,
 				token,
 			}),

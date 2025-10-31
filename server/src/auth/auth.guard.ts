@@ -4,21 +4,21 @@ import {
 	Injectable,
 	UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { SessionService } from '../session/session.service';
+import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
+import ms, { StringValue } from 'ms';
 import AUTH_MESSAGES from '../constants/auth.messages';
-import { UserService } from '../user/user.service';
+import CONFIG_CONSTANTS from '../constants/config.constants';
+import { SessionService } from '../session/session.service';
 import {
 	JwtAccessPayloadType,
 	JwtRefreshPayloadType,
 } from '../types/jwt.types';
-import jwt from 'jsonwebtoken';
-import { ConfigService } from '@nestjs/config';
-import CONFIG_CONSTANTS from '../constants/config.constants';
+import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
-import ms, { StringValue } from 'ms';
-import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -44,9 +44,21 @@ export class AuthGuard implements CanActivate {
 		}
 
 		try {
-			const decodedAccessToken: JwtAccessPayloadType =
-				this.jwtService.verify(accessToken);
+			const decodedAccessToken: JwtAccessPayloadType = jwt.verify(
+				accessToken,
+				this.configService.get<string>(
+					CONFIG_CONSTANTS.JWT_ACCESS_SECRET,
+				) || CONFIG_CONSTANTS.JWT_ACCESS_SECRET,
+			) as JwtAccessPayloadType;
 			if (decodedAccessToken) {
+				request['user'] = {
+					id: decodedAccessToken.id,
+					email: decodedAccessToken.email,
+					salt: decodedAccessToken.salt,
+					name: decodedAccessToken.name,
+					createdAt: decodedAccessToken.createdAt,
+				};
+				request['sessionId'] = decodedAccessToken.sessionId;
 				return true;
 			}
 		} catch {
@@ -62,7 +74,7 @@ export class AuthGuard implements CanActivate {
 
 			if (decodedRefreshToken) {
 				const user = await this.userService.findById(
-					decodedRefreshToken.userId,
+					decodedRefreshToken.id,
 				);
 				if (!user)
 					throw new UnauthorizedException(
@@ -89,7 +101,8 @@ export class AuthGuard implements CanActivate {
 						AUTH_MESSAGES.ERROR.SESSION_EXPIRED,
 					);
 				const newAccessToken = this.authService.generateAccessToken(
-					user.id,
+					user,
+					decodedRefreshToken.sessionId,
 				);
 				response.cookie('accessToken', newAccessToken, {
 					httpOnly: true,
@@ -102,7 +115,7 @@ export class AuthGuard implements CanActivate {
 					),
 				});
 				request['user'] = user;
-				request['sessionId'] = session.id;
+				request['sessionId'] = decodedRefreshToken.sessionId;
 				return true;
 			}
 			return false;

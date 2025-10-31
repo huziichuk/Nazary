@@ -1,23 +1,53 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
-import { Trim } from 'src/decorators/trim.decorator';
-
-export class CreateNoteDto {
-	@ApiProperty()
-	@MaxLength(256)
+import {
+	IsArray,
+	IsBoolean,
+	IsIn,
+	IsOptional,
+	IsString,
+} from 'class-validator';
+export class NoteDto {
 	@IsString()
-	@Trim()
-	@IsNotEmpty()
-	title: string;
+	titleCipher: string;
 
-	@ApiProperty()
-	@MaxLength(10000)
 	@IsString()
-	content: string;
+	titleNonce: string;
 
-	@ApiProperty({ required: false })
-	@IsString({ each: true })
-	tags?: string[];
+	@IsString()
+	contentCipher: string;
+
+	@IsString()
+	contentNonce: string;
+
+	@IsString()
+	tagsCipher: string;
+
+	@IsString()
+	tagsNonce: string;
+
+	@IsArray()
+	blindTokens: string[];
 }
 
-export type UpdateNoteDto = Partial<CreateNoteDto>;
+export class SortNotesDto {
+	@IsOptional()
+	@IsIn(['created', 'updated', 'title'])
+	sortBy: 'created' | 'updated' | 'title' = 'created';
+
+	@IsOptional()
+	@IsIn(['asc', 'desc'])
+	order: 'asc' | 'desc' = 'desc';
+
+	@IsOptional()
+	isFavorite: 'true' | 'false' = 'false';
+}
+
+export class SearchNoteDto {
+	@IsArray()
+	@IsString({ each: true })
+	blindTokens: string[];
+}
+
+export class ToggleFavoriteNoteDto {
+	@IsBoolean()
+	status: boolean;
+}

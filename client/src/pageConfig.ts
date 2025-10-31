@@ -11,6 +11,12 @@ class PageConfig {
 	githubAuthorLink = 'https://github.com/huziichuk'
 	authorEmailLink = 'mailto:nazar.huziichuk@gmail.com'
 	resetPassword = '/reset-password'
+	createNote = `${this.dashboard}/create-note`
+	noteRoute = `${this.dashboard}/notes/:id`
+
+	noteLink(id: string) {
+		return `${this.dashboard}/notes/${id}`
+	}
 }
 
 export const pageConfig = new PageConfig()

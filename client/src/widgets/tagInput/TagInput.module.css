@@ -1,0 +1,318 @@
+.tagInputWrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.inputSection {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.inputContainer {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.input {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	color: var(--color-text);
+	font-size: var(--font-size-md);
+	transition: all 0.2s ease;
+	z-index: 2;
+	position: relative;
+}
+
+.input:focus {
+	border-color: var(--color-primary);
+	box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+}
+
+.input::placeholder {
+	color: var(--color-text-disabled);
+}
+
+.input:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	background: var(--color-surface-alt);
+}
+
+.highlightOverlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0.75rem 1rem;
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	z-index: 1;
+	font-size: var(--font-size-md);
+	white-space: pre-wrap;
+	overflow: hidden;
+	color: transparent;
+}
+
+.normalText {
+	color: transparent;
+}
+
+.highlightedTag {
+	background: rgba(124, 58, 237, 0.3);
+	color: var(--color-primary);
+	padding: 0.125rem 0.375rem;
+	border-radius: calc(var(--radius) - 4px);
+	font-weight: 500;
+	border: 1px solid rgba(124, 58, 237, 0.4);
+	margin: 0 0.125rem;
+	position: relative;
+}
+
+.inputHint {
+	color: var(--color-text-secondary);
+	font-size: var(--font-size-sm);
+	margin-top: 0.25rem;
+}
+
+.focused .inputHint {
+	color: var(--color-primary);
+}
+
+.disabled .inputHint {
+	opacity: 0.5;
+}
+
+.tagsSection {
+	background: rgba(124, 58, 237, 0.05);
+	border: 1px solid rgba(124, 58, 237, 0.2);
+	border-radius: var(--radius);
+	padding: 1rem;
+	animation: tagsAppear 0.2s ease-out;
+}
+
+.tagsHeader {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 0.75rem;
+	color: var(--color-primary);
+}
+
+.hashIcon {
+	width: 1rem;
+	height: 1rem;
+}
+
+.tagsCount {
+	font-size: var(--font-size-sm);
+	font-weight: 500;
+}
+
+.tagsList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.tagChip {
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	background: rgba(124, 58, 237, 0.15);
+	color: var(--color-primary);
+	padding: 0.375rem 0.75rem;
+	border-radius: calc(var(--radius) - 2px);
+	border: 1px solid rgba(124, 58, 237, 0.3);
+	font-size: var(--font-size-sm);
+	font-weight: 500;
+	animation: tagChipAppear 0.2s ease-out;
+}
+
+.tagText {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.tagText::before {
+	content: '#';
+	opacity: 0.7;
+	font-size: var(--font-size-xs);
+}
+
+.removeTagButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 1rem;
+	height: 1rem;
+	background: none;
+	border: none;
+	color: var(--color-primary);
+	cursor: pointer;
+	border-radius: calc(var(--radius) - 4px);
+	padding: 0;
+	opacity: 0.7;
+	transition: all 0.2s ease;
+}
+
+.removeTagButton:hover:not(:disabled) {
+	opacity: 1;
+	background: rgba(124, 58, 237, 0.2);
+}
+
+.removeTagButton:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.removeIcon {
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+/* Анимации */
+@keyframes tagsAppear {
+	from {
+		opacity: 0;
+		transform: translateY(-0.5rem);
+		max-height: 0;
+		padding: 0 1rem;
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+		max-height: 200px;
+		padding: 1rem;
+	}
+}
+
+@keyframes tagChipAppear {
+	from {
+		opacity: 0;
+		transform: scale(0.8);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* Состояния */
+.tagInputWrapper.focused .inputContainer {
+	position: relative;
+}
+
+.tagInputWrapper.focused .inputContainer::after {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	right: 0;
+	height: 2px;
+	background: var(--color-primary);
+	border-radius: 0 0 2px 2px;
+	animation: focusLine 0.2s ease-out;
+}
+
+@keyframes focusLine {
+	from {
+		width: 0;
+		left: 50%;
+	}
+	to {
+		width: 100%;
+		left: 0;
+	}
+}
+
+.tagInputWrapper.disabled {
+	opacity: 0.6;
+}
+
+.tagInputWrapper.disabled .tagsSection {
+	background: var(--color-surface-alt);
+	border-color: var(--color-border);
+}
+
+.tagInputWrapper.disabled .tagChip {
+	background: var(--color-surface-alt);
+	color: var(--color-text-secondary);
+	border-color: var(--color-border);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+	.input {
+		padding: 0.625rem 0.875rem;
+		font-size: var(--font-size-sm);
+	}
+
+	.highlightOverlay {
+		padding: 0.625rem 0.875rem;
+		font-size: var(--font-size-sm);
+	}
+
+	.inputHint {
+		font-size: var(--font-size-xs);
+	}
+
+	.tagsSection {
+		padding: 0.75rem;
+	}
+
+	.tagsList {
+		gap: 0.375rem;
+	}
+
+	.tagChip {
+		padding: 0.25rem 0.5rem;
+		font-size: var(--font-size-xs);
+	}
+
+	.removeTagButton {
+		width: 0.875rem;
+		height: 0.875rem;
+	}
+
+	.removeIcon {
+		width: 0.625rem;
+		height: 0.625rem;
+	}
+}
+
+/* Улучшения для доступности */
+.removeTagButton:focus {
+	outline: 2px solid var(--color-primary);
+	outline-offset: 1px;
+}
+
+.input:focus + .highlightOverlay {
+	border-color: var(--color-primary);
+}
+
+/* Hover эффекты */
+.tagChip:hover {
+	background: rgba(124, 58, 237, 0.2);
+	border-color: rgba(124, 58, 237, 0.4);
+}
+
+.inputContainer:hover .input:not(:focus) {
+	border-color: var(--color-text-secondary);
+}
+
+/* Фикс для overlay позиционирования */
+.highlightOverlay {
+	font-family: inherit;
+	line-height: inherit;
+	letter-spacing: inherit;
+	word-spacing: inherit;
+}

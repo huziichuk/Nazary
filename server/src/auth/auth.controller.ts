@@ -19,9 +19,7 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Response } from 'express';
-import ms, { StringValue } from 'ms';
 import AUTH_MESSAGES from '../constants/auth.messages';
-import CONFIG_CONSTANTS from '../constants/config.constants';
 import GENERAL_MESSAGES from '../constants/general.messages';
 import { SessionService } from '../session/session.service';
 import { AuthRequest } from '../types/request.types';
@@ -48,8 +46,8 @@ export class AuthController {
 		description: AUTH_MESSAGES.ERROR.USER_ALREADY_EXISTS,
 	})
 	@ApiBadRequestResponse({ description: GENERAL_MESSAGES.ERROR.VALIDATION })
-	@HttpCode(HttpStatus.CREATED)
 	@Post('register')
+	@HttpCode(HttpStatus.CREATED)
 	async register(@Body(new ValidationPipe()) dto: RegisterDto) {
 		await this.authService.register(dto);
 		return { message: AUTH_MESSAGES.SUCCESS.REGISTERED };
@@ -64,38 +62,56 @@ export class AuthController {
 		@Body(new ValidationPipe()) dto: LoginDto,
 		@Res() res: Response,
 	) {
-		const { accessToken, refreshToken } = await this.authService.login(dto);
+		const { accessToken, refreshToken, salt } =
+			await this.authService.login(dto);
 
 		res.cookie('accessToken', accessToken, {
 			httpOnly: true,
 			secure: false,
 			sameSite: 'lax',
-			maxAge: ms(
+			/*maxAge: ms(
 				this.configService.get<StringValue>(
 					CONFIG_CONSTANTS.JWT_ACCESS_EXPIRES_IN,
 				) ?? '10m',
-			),
+			), */
 		});
 		res.cookie('refreshToken', refreshToken, {
 			httpOnly: true,
 			secure: false,
 			sameSite: 'lax',
-			maxAge: ms(
+			/*maxAge: ms(
 				this.configService.get<StringValue>(
 					CONFIG_CONSTANTS.JWT_REFRESH_EXPIRES_IN,
 				) ?? '30d',
-			),
+			), */
 		});
 
-		res.status(200).json({ message: AUTH_MESSAGES.SUCCESS.LOGGED_IN });
+		res.status(200).json({
+			message: AUTH_MESSAGES.SUCCESS.LOGGED_IN,
+			salt,
+		});
+	}
+
+	@UseGuards(AuthGuard)
+	@Get('salt')
+	getSalt(@Req() req: AuthRequest) {
+		return {
+			salt: req.user.salt,
+		};
 	}
 
 	@ApiOkResponse({ description: AUTH_MESSAGES.SUCCESS.AUTHORIZED })
 	@ApiUnauthorizedResponse({ description: AUTH_MESSAGES.ERROR.UNAUTHORIZED })
 	@UseGuards(AuthGuard)
 	@Get('is-auth')
-	isAuth() {
-		return { message: AUTH_MESSAGES.SUCCESS.AUTHORIZED };
+	isAuth(@Req() req: AuthRequest) {
+		return {
+			id: req.user.id,
+			email: req.user.email,
+			createdAt: req.user.createdAt,
+			salt: req.user.salt,
+			name: req.user.name ? req.user.name : req.user.email,
+		};
 	}
 
 	@ApiOkResponse({ description: AUTH_MESSAGES.SUCCESS.LOGOUT })
@@ -105,6 +121,7 @@ export class AuthController {
 	async logout(@Res() res: Response, @Req() req: AuthRequest) {
 		res.clearCookie('accessToken');
 		res.clearCookie('refreshToken');
+		console.log(req.sessionId);
 		await this.sessionService.delete(req.sessionId);
 		res.status(200).json({ message: AUTH_MESSAGES.SUCCESS.LOGOUT });
 	}

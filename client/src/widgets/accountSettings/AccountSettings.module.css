@@ -1,0 +1,337 @@
+.settingsContainer {
+	max-width: 800px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.sectionHeader {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.sectionIcon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: var(--color-primary);
+	margin-top: 0.25rem;
+}
+
+.sectionTitle {
+	color: var(--color-text);
+	margin: 0 0 0.25rem 0;
+	font-size: var(--font-size-lg);
+}
+
+.sectionTitle.dangerTitle {
+	color: var(--color-error);
+}
+
+.sectionDescription {
+	color: var(--color-text-secondary);
+	margin: 0;
+	font-size: var(--font-size-sm);
+	line-height: 1.5;
+}
+
+.card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	padding: 1.5rem;
+}
+
+.card.dangerCard {
+	border-color: rgba(239, 68, 68, 0.3);
+	background: rgba(239, 68, 68, 0.05);
+}
+
+.profileInfo {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.avatar {
+	width: 3rem;
+	height: 3rem;
+	background: var(--color-primary);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.avatarIcon {
+	width: 1.5rem;
+	height: 1.5rem;
+	color: white;
+}
+
+.userInfo {
+	flex: 1;
+}
+
+.userName {
+	color: var(--color-text);
+	margin: 0 0 0.25rem 0;
+	font-size: var(--font-size-md);
+}
+
+.userRole {
+	color: var(--color-text-secondary);
+	margin: 0;
+	font-size: var(--font-size-sm);
+}
+
+.settingItem {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+	.settingItem {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1rem;
+	}
+}
+
+.settingInfo {
+	flex: 1;
+}
+
+.settingHeader {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+}
+
+.settingIcon {
+	width: 1.25rem;
+	height: 1.25rem;
+	color: var(--color-text-secondary);
+	margin-top: 0.125rem;
+}
+
+.settingIcon.dangerIcon {
+	color: var(--color-error);
+}
+
+.settingTitle {
+	color: var(--color-text);
+	margin: 0 0 0.25rem 0;
+	font-size: var(--font-size-md);
+}
+
+.settingTitle.dangerTitle {
+	color: var(--color-error);
+}
+
+.actionButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: var(--color-primary);
+	color: white;
+	border: none;
+	border-radius: var(--radius);
+	padding: 0.75rem 1rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.actionButton:hover {
+	background: var(--color-primary-dark);
+}
+
+.actionButton.warningButton {
+	background: #f59e0b;
+}
+
+.actionButton.warningButton:hover {
+	background: #d97706;
+}
+
+.actionButton.dangerButton {
+	background: var(--color-error);
+}
+
+.actionButton.dangerButton:hover {
+	background: #dc2626;
+}
+
+.buttonIcon {
+	width: 1rem;
+	height: 1rem;
+}
+
+.divider {
+	height: 1px;
+	background: var(--color-border);
+	margin: 1.5rem 0;
+}
+
+.changePasswordForm {
+	margin-top: 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid var(--color-border);
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.formGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.label {
+	color: var(--color-text);
+	font-weight: 500;
+	font-size: var(--font-size-sm);
+}
+
+.passwordInput {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.input {
+	width: 100%;
+	padding: 0.75rem;
+	padding-right: 3rem;
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	color: var(--color-text);
+	transition: border-color 0.2s ease;
+}
+
+.input:focus {
+	border-color: var(--color-primary);
+	outline: none;
+}
+
+.input::placeholder {
+	color: var(--color-text-secondary);
+}
+
+.togglePassword {
+	position: absolute;
+	right: 0.75rem;
+	background: none;
+	border: none;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	padding: 0.25rem;
+	border-radius: calc(var(--radius) - 2px);
+	transition: all 0.2s ease;
+}
+
+.togglePassword:hover {
+	color: var(--color-text);
+	background: var(--color-hover);
+}
+
+.togglePassword svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.formActions {
+	display: flex;
+	justify-content: flex-start;
+	margin-top: 0.5rem;
+}
+
+.submitButton {
+	background: var(--color-primary);
+	color: white;
+	border: none;
+	border-radius: var(--radius);
+	padding: 0.75rem 1.5rem;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	font-weight: 500;
+}
+
+.submitButton:hover:not(.disabled) {
+	background: var(--color-primary-dark);
+}
+
+.submitButton.disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+	.settingsContainer {
+		gap: 1.5rem;
+	}
+
+	.card {
+		padding: 1rem;
+	}
+
+	.sectionHeader {
+		gap: 0.75rem;
+	}
+
+	.settingHeader {
+		gap: 0.5rem;
+	}
+
+	.changePasswordForm {
+		margin-top: 1rem;
+		padding-top: 1rem;
+	}
+
+	.actionButton {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.formActions {
+		justify-content: stretch;
+	}
+
+	.submitButton {
+		width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	.profileInfo {
+		flex-direction: column;
+		text-align: center;
+		gap: 0.75rem;
+	}
+
+	.settingItem {
+		gap: 0.75rem;
+	}
+
+	.settingHeader {
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.settingIcon {
+		align-self: flex-start;
+	}
+}

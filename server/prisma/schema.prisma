@@ -15,6 +15,7 @@ model User {
   confirmToken      String?
   name              String?
   notes             Note[]
+  salt              String
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   sessions          Session[]
@@ -22,20 +23,25 @@ model User {
 }
 
 model Note {
-  id        String   @id @default(cuid())
-  title     String
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags      Tag[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model Tag {
-  id    String @id @default(cuid())
-  name  String @unique
-  notes Note[]
+  titleCipher   String
+  titleNonce    String
+  contentCipher String
+  contentNonce  String
+  tagsCipher    String
+  tagsNonce     String
+
+  blindTokens String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  isFavorite Boolean @default(false)
+
+  @@index([userId, updatedAt])
+  @@index([blindTokens], type: Gin)
 }
 
 model Session {

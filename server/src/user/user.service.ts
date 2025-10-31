@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { randomBytes } from 'crypto';
 import { DatabaseService } from '../database/database.service';
 import { CreateUserDto } from './dto/user.dto';
 
@@ -16,7 +17,10 @@ export class UserService {
 	}
 
 	async create(dto: CreateUserDto) {
-		return this.databaseService.user.create({ data: dto });
+		const salt = randomBytes(16);
+		return this.databaseService.user.create({
+			data: { ...dto, salt: salt.toString('base64') },
+		});
 	}
 
 	async findByConfirmToken(token: string) {

@@ -1,9 +1,9 @@
-import { useNavigate, useLocation } from 'react-router-dom'
-import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
-import styles from './Auth.module.css'
 import logo from '@/assets/nazary-white.png'
 import { pageConfig } from '@/pageConfig'
+import { useLocation, useNavigate } from 'react-router-dom'
+import styles from './Auth.module.css'
+import LoginForm from './LoginForm'
+import RegisterForm from './RegisterForm'
 
 const Auth = () => {
 	const navigate = useNavigate()
@@ -11,7 +11,7 @@ const Auth = () => {
 
 	const isLogin = location.pathname === pageConfig.login
 
-	console.log(styles.error)
+	
 
 	const handleTabClick = (mode: 'login' | 'register') => {
 		if (mode === 'login') {

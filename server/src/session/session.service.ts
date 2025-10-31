@@ -18,6 +18,7 @@ export class SessionService {
 	}
 
 	async delete(id: string) {
+		console.log('sessionId:', id);
 		return this.databaseService.session.delete({ where: { id } });
 	}
 
