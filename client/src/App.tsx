@@ -6,15 +6,14 @@ import Home from '@/pages/home/Home.tsx'
 import NotFound from '@/pages/notFound/NotFound.tsx'
 import ResendVerify from '@/pages/resendVerify/ResendVerify'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import './App.css'
 import ProtectedRoute from './components/ProtectedRoute'
 import NoteCreator from './pages/createNote/CreateNote'
 import Dashboard from './pages/dashboard/Dashboard'
+import NoteViewer from './pages/noteViewer/NoteViewer'
 import ResetPassword from './pages/resetPassword/ResetPassword'
 import MasterKeyProvider from './providers/MasterKeyProvider'
-import NoteViewer from './pages/noteViewer/NoteViewer'
 
 const client = new QueryClient()
 
@@ -22,7 +21,6 @@ function App() {
 	return (
 		<>
 			<QueryClientProvider client={client}>
-				<ReactQueryDevtools initialIsOpen={false} />
 				<MasterKeyProvider>
 					<Router>
 						<Routes>
