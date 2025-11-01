@@ -82,20 +82,24 @@
 		"moduleFileExtensions": [
 			"js",
 			"json",
-			"ts"
+			"ts",
+			"tsx"
 		],
 		"rootDir": "src",
 		"testRegex": ".*\\.spec\\.ts$",
 		"transform": {
-			"^.+\\.(t|j)s$": "ts-jest"
+			"^.+\\.(t|j)sx?$": "ts-jest"
 		},
 		"transformIgnorePatterns": [
 			"/node_modules/(?!(nanoid)/)"
 		],
 		"collectCoverageFrom": [
-			"**/*.(t|j)s"
+			"**/*.(t|j)sx?"
 		],
-		"coverageDirectory": "../coverage",
-		"testEnvironment": "node"
+		"coverageDirectory": "coverage",
+		"testEnvironment": "node",
+		"moduleNameMapper": {
+			"^src/(.*)$": "<rootDir>/$1"
+		}
 	}
 }

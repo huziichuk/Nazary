@@ -70,7 +70,6 @@ export class AuthService {
 	}
 
 	async login(dto: LoginDto) {
-		console.log(this.configService.get('JWT_ACCESS_SECRET'));
 		const user = await this.userService.findByEmail(dto.email);
 		if (!user) {
 			throw new UnauthorizedException(AUTH_MESSAGES.ERROR.USER_NOT_FOUND);

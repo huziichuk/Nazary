@@ -121,7 +121,6 @@ export class AuthController {
 	async logout(@Res() res: Response, @Req() req: AuthRequest) {
 		res.clearCookie('accessToken');
 		res.clearCookie('refreshToken');
-		console.log(req.sessionId);
 		await this.sessionService.delete(req.sessionId);
 		res.status(200).json({ message: AUTH_MESSAGES.SUCCESS.LOGOUT });
 	}
