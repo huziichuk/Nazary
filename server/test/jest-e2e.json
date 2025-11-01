@@ -1,9 +1,15 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
-  "rootDir": ".",
-  "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
-  }
+	"moduleFileExtensions": ["ts", "js", "json", "tsx"],
+	"rootDir": "../",
+	"testRegex": ".*\\.e2e-spec\\.ts$",
+	"transform": {
+		"^.+\\.(t|j)sx?$": "ts-jest"
+	},
+	"testEnvironment": "node",
+	"transformIgnorePatterns": ["/node_modules/(?!(nanoid)/)"],
+	"moduleNameMapper": {
+		"^src/(.*)$": "<rootDir>/src/$1"
+	},
+	"coverageDirectory": "coverage-e2e",
+	"verbose": true
 }
