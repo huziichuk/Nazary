@@ -7,10 +7,9 @@ stages:
 env-setup-job:
   stage: create-env
   script:
-    - echo "$env" > .env
+    - if [ -f "$env" ]; then cp "$env" .env; else printf "%s" "$env" > .env; fi
   artifacts:
-    paths:
-      - .env
+    paths: ['.env']
 
 build-job:
   stage: build
