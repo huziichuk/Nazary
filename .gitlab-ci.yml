@@ -1,33 +1,62 @@
-
-
-stages:          # List of stages for jobs, and their order of execution
+stages:
+  - create-env
   - build
   - test
   - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+env-setup-job:
+  stage: create-env
+  script:
+    - echo "$env" > .env
+  artifacts:
+    paths:
+      - .env
+
+build-job:
   stage: build
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+    - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA  ./server/
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
+test-job:
+  stage: test
   script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+    - docker run --env-file .env --rm nazary-api:$CI_COMMIT_SHORT_SHA npm run test
 
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+deploy-job:services:
+  db:
+    image: postgres:16
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-app}
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-app}']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
+  api:
+    env_file:
+      - .env
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+
+volumes:
+  dbdata:
+
+  stage: deploy
   script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    - docker-compose -f docker-compose.yml up -d --build
