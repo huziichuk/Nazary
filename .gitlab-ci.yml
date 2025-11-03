@@ -1,27 +1,20 @@
 stages:
-  - create-env
   - build
   - test
   - deploy
 
-env-setup-job:
-  stage: create-env
-  script:
-    - if [ -f "$env" ]; then cp "$env" .env; else printf "%s" "$env" > .env; fi
-  artifacts:
-    paths: ['.env']
-
 build-job:
   stage: build
   script:
-    - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA  ./server/
+    - cat "$env"
+    - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA ./server/
 
 test-job:
   stage: test
   script:
-    - docker run --env-file .env --rm nazary-api:$CI_COMMIT_SHORT_SHA npm run test
+    - docker run --env-file "$env" --rm nazary-api:$CI_COMMIT_SHORT_SHA npm run test
 
 deploy-job:
   stage: deploy
   script:
-    - docker-compose -f docker-compose.yml up -d --build
+    - docker compose --env-file "$env" -f docker-compose.yml up -d --build
