@@ -17,4 +17,5 @@ test-job:
 deploy-job:
   stage: deploy
   script:
+    - cp "$env" .env
     - docker compose --env-file "$env" -f docker-compose.yml up -d --build
