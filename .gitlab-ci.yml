@@ -21,5 +21,9 @@ test-job:
 deploy-job:
   stage: deploy
   script:
-    - cat "$env"
+    - cp "$env" ./server/.env
+    - cat ./server/.env
+    - cp "$env" .env
+    - cat .env
+    - cat ./server/.env
     - docker compose -f docker-compose.yml up -d --build
