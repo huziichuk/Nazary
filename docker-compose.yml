@@ -1,6 +1,8 @@
 services:
   db:
     image: postgres:16
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -15,6 +17,8 @@ services:
     restart: unless-stopped
 
   api:
+    env_file:
+      - .env
     build:
       context: ./server
       dockerfile: Dockerfile

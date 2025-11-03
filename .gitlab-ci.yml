@@ -6,8 +6,11 @@ stages:
 build-job:
   stage: build
   script:
-    - cat "$env"
     - cp "$env" ./server/
+    - cat ./server/.env
+    - cp "$env"
+    - cat .env
+    - cat ./server/.env
     - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA ./server/
 
 test-job:
