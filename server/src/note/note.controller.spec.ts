@@ -63,6 +63,7 @@ describe('NoteController', () => {
 			blindTokens: ['token1', 'token2'],
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const result = await controller.create(req, dto);
 		expect(result).toEqual({
 			id: 'noteId',
@@ -86,6 +87,7 @@ describe('NoteController', () => {
 			isFavorite: 'false',
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const result = await controller.findAll(req, sortNotesDto);
 		expect(result).toEqual([
 			{

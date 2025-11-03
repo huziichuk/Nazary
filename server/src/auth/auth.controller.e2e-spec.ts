@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { Test } from '@nestjs/testing';
 import cookieParser from 'cookie-parser';
+import { Server } from 'http';
 import { AuthModule } from 'src/auth/auth.module';
 import { DatabaseService } from 'src/database/database.service';
 import { EmailService } from 'src/email/email.service'; // <= важно
@@ -68,7 +69,7 @@ describe('AuthController (e2e)', () => {
 	});
 
 	it('should registers user', async () => {
-		await request(app.getHttpServer())
+		await request(app.getHttpServer() as Server)
 			.post('/auth/register')
 			.send(userData)
 			.expect(201);
@@ -79,14 +80,14 @@ describe('AuthController (e2e)', () => {
 			where: { email: userData.email },
 		});
 		expect(user).toBeDefined();
-		await request(app.getHttpServer())
+		await request(app.getHttpServer() as Server)
 			.post(`/auth/verify-email?token=${emailConfirmToken}`)
 			.send()
 			.expect(201);
 	});
 
 	it('should login and checks auth', async () => {
-		const loginRes = await request(app.getHttpServer())
+		const loginRes = await request(app.getHttpServer() as Server)
 			.post('/auth/login')
 			.send({ email: userData.email, password: userData.password })
 			.expect(200);
@@ -94,13 +95,15 @@ describe('AuthController (e2e)', () => {
 		const cookies = loginRes.get('Set-Cookie') as string[];
 		expect(cookies).toBeDefined();
 
-		await request(app.getHttpServer())
+		await request(app.getHttpServer() as Server)
 			.get('/auth/is-auth')
 			.set('Cookie', cookies)
 			.expect(200);
 	});
 
 	it('401 without token', async () => {
-		await request(app.getHttpServer()).get('/auth/is-auth').expect(401);
+		await request(app.getHttpServer() as Server)
+			.get('/auth/is-auth')
+			.expect(401);
 	});
 });
