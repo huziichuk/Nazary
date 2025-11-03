@@ -6,12 +6,12 @@ stages:
 build-job:
   stage: build
   script:
-    - cp "$env" ./server/.env
-    - cat ./server/.env
-    - cp "$env" .env
-    - cat .env
-    - cat ./server/.env
-    - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA ./server/
+    #- cp "$env" ./server/.env
+    #- cat ./server/.env
+    #- cp "$env" .env
+    #- cat .env
+    #- cat ./server/.env
+    - docker build --env-file "$env" -t nazary-api:$CI_COMMIT_SHORT_SHA ./server/
 
 test-job:
   stage: test
@@ -21,9 +21,9 @@ test-job:
 deploy-job:
   stage: deploy
   script:
-    - cp "$env" ./server/.env
-    - cat ./server/.env
-    - cp "$env" .env
-    - cat .env
-    - cat ./server/.env
-    - docker compose -f docker-compose.yml up -d --build
+    #- cp "$env" ./server/.env
+    #- cat ./server/.env
+    #- cp "$env" .env
+    #- cat .env
+    #- cat ./server/.env
+    - docker compose --env-file "$env" -f docker-compose.yml up -d --build
