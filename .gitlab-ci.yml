@@ -8,7 +8,9 @@ build-job:
   script:
     - cp "$env" ./server/.env
     - cp "$env" .env
+    - cp "$client_env" ./client/.env
     - docker build -t nazary-api:$CI_COMMIT_SHORT_SHA ./server/
+    - docker build -t nazary-client:$CI_COMMIT_SHORT_SHA ./client/
 
 test-job:
   stage: test
@@ -20,4 +22,5 @@ deploy-job:
   script:
     - cp "$env" ./server/.env
     - cp "$env" .env
+    - cp "$client_env" ./client/.env
     - docker compose --env-file "$env" -f docker-compose.yml up -d --build
