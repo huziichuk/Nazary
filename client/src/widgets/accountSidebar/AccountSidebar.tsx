@@ -9,11 +9,13 @@ import styles from './AccountSidebar.module.css'
 interface AccountSidebarProps {
 	activeTab: 'all' | 'favorites' | 'settings'
 	onTabChange: (tab: 'all' | 'favorites' | 'settings') => void
+	isMobileMenuOpen?: boolean
 }
 
 const AccountSidebar: React.FC<AccountSidebarProps> = ({
 	activeTab,
 	onTabChange,
+	isMobileMenuOpen = false,
 }) => {
 	const navigate = useNavigate()
 
@@ -43,7 +45,9 @@ const AccountSidebar: React.FC<AccountSidebarProps> = ({
 	]
 
 	return (
-		<aside className={styles.sidebar}>
+		<aside
+			className={`${styles.sidebar} ${isMobileMenuOpen ? styles.active : ''}`}
+		>
 			<div className={styles.header}>
 				<div className={styles.logoSection}>
 					<img src={logo} alt='Nazary Logo' className={styles.logo} />

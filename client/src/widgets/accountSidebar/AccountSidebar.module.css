@@ -10,9 +10,6 @@
 }
 
 @media (max-width: 768px) {
-	.sidebar {
-		display: none;
-	}
 }
 
 .header {
@@ -183,11 +180,12 @@
 	text-overflow: ellipsis;
 }
 
-/* Стили для мобильных устройств - показываем сайдбар как bottom navigation */
 @media (max-width: 768px) {
 	.sidebar {
 		display: none;
 	}
 
-	/* Можно добавить мобильную навигацию снизу */
+	.sidebar.active {
+		display: block;
+	}
 }

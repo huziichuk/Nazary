@@ -32,6 +32,7 @@ function Dashboard() {
 	const [blindTokens, setBlindTokens] = useState<string[]>([])
 	const [sortOrder, setSortOrder] = useState<order>('desc')
 	const [showTagSuggestions, setShowTagSuggestions] = useState(false)
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
 	const navigate = useNavigate()
 
@@ -200,16 +201,30 @@ function Dashboard() {
 				</title>
 			</article>
 			<div className={styles.accountPage}>
-				<AccountSidebar activeTab={activeTab} onTabChange={setActiveTab} />
+				<AccountSidebar
+					activeTab={activeTab}
+					isMobileMenuOpen={isMobileMenuOpen}
+					onTabChange={setActiveTab}
+				/>
 
 				<main className={styles.mainContent}>
 					<div className={styles.header}>
 						<div className={styles.titleSection}>
-							<h1 className={styles.pageTitle}>
-								{activeTab === 'all' && 'All Notes'}
-								{activeTab === 'favorites' && 'Favorite Notes'}
-								{activeTab === 'settings' && 'Settings'}
-							</h1>
+							<div className={styles.titleContainer}>
+								<h1 className={styles.pageTitle}>
+									{activeTab === 'all' && 'All Notes'}
+									{activeTab === 'favorites' && 'Favorite Notes'}
+									{activeTab === 'settings' && 'Settings'}
+								</h1>
+								<div
+									className={styles.burgerMenu}
+									onClick={() => setIsMobileMenuOpen(prev => !prev)}
+								>
+									<span className={styles.burgerLine}></span>
+									<span className={styles.burgerLine}></span>
+									<span className={styles.burgerLine}></span>
+								</div>
+							</div>
 							{activeTab !== 'settings' && (
 								<div className={styles.notesCount}>{notes.length} notes</div>
 							)}
