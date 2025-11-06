@@ -1,4 +1,6 @@
-# 📝 Nazary — E2EE Note App
+# 📝 [Nazary](https://nazary.online) — E2EE Note App
+
+### Link: [https://nazary.online](https://nazary.online)
 
 A note-taking app with end-to-end encryption, tags, and tag-based search.  
 Frontend in React. Backend in NestJS. Email verification. JWT with refresh tokens.
