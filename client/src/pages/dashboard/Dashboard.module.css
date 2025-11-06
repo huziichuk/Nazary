@@ -272,6 +272,7 @@
 	color: var(--color-text);
 	cursor: pointer;
 	min-width: 160px;
+	width: 100%;
 	transition: background-color 0.2s ease;
 	outline: none;
 }
